@@ -1,0 +1,28 @@
+###
+GET http://localhost:3000/tickets
+
+###
+GET http://localhost:3000/tickets/1
+
+###
+POST http://localhost:3000/tickets
+Content-Type: application/json
+
+{
+  "match": { "id": 1 },
+  "user": { "id": 6 },
+  "area": "A",
+  "price": 500000
+}
+
+###
+PATCH http://localhost:3000/tickets/1
+Content-Type: application/json
+
+{
+  "area": "B",
+  "price": 600000
+}
+
+###
+DELETE http://localhost:3000/tickets/1
