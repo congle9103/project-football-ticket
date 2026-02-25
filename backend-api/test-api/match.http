@@ -1,0 +1,60 @@
+###
+GET http://localhost:3000/matches
+
+###
+GET http://localhost:3000/matches/1
+
+###
+POST http://localhost:3000/matches
+Content-Type: application/json
+
+{
+  "slug_match": "sbh-da-nang-vs-cong-an-ha-noi-2026-02-10--18:30",
+  "away_team": "Công An Hà Nội",
+  "image_away_team": "a-little-history-of-the-world-2ic8qqdr-qjkhxpad.webp",
+  "time": "2026-02-10--18:30",
+  "round": "Round 19",
+  "season": "2025-2026"
+}
+
+###
+POST http://localhost:3000/matches
+Content-Type: application/json
+
+{
+  "away_team": "Hà Nội FC",
+  "slug": "ha-noi-fc",
+  "image_away_team": "a-little-history-of-the-world-2ic8qqdr-qjkhxpad.webp",
+  "time": "2026-02-17--18:30",
+  "round": "Round 20",
+  "season": "2025-2026"
+}
+
+###
+PATCH http://localhost:3000/matches/2
+Content-Type: application/json
+
+{
+  "away_team": "Công An Hà Nội",
+  "slug": "cong-an-ha-noi",
+  "image_away_team": "a-little-history-of-the-world-2ic8qqdr-qjkhxpad.webp",
+  "time": "2026-02-10--18:30",
+  "round": "Round 19",
+  "season": "2025-2026"
+}
+
+###
+PATCH http://localhost:3000/matches/3
+Content-Type: application/json
+
+{
+  "away_team": "Hà Nội FC",
+  "slug": "ha-noi-fc",
+  "image_away_team": "a-little-history-of-the-world-2ic8qqdr-qjkhxpad.webp",
+  "time": "2026-02-17--18:30",
+  "round": "Round 20",
+  "season": "2025-2026"
+}
+
+###
+DELETE http://localhost:3000/matches/2

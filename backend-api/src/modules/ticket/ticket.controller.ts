@@ -6,18 +6,24 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { AuthGuard } from '@nestjs/passport';
+import type { Request } from 'express';
 
 @Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketService.create(createTicketDto);
+  create(@Body() createTicketDto: CreateTicketDto, @Req() req: Request) {
+    const user = req.user as any;
+    return this.ticketService.create(createTicketDto, user.userId);
   }
 
   @Get()

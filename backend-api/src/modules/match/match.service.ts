@@ -52,4 +52,12 @@ export class MatchService {
 
     return match;
   }
+
+  async findBySlug(slug_match: string) {
+    const match = await this.matchRepo.findOne({ where: { slug_match } });
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
+    return match;
+  }
 }

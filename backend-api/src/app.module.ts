@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MatchModule } from './modules/match/match.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ClubModule } from './modules/club/club.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { AuthModule } from './modules/auth/auth.module';
     MatchModule,
     TicketModule,
     AuthModule,
+    ClubModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

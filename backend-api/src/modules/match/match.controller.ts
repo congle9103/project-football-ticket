@@ -10,16 +10,25 @@ import {
 import { MatchService } from './match.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('matches')
 export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
-  @Post()
-  create(@Body() createMatchDto: CreateMatchDto) {
-    return this.matchService.create(createMatchDto);
+  @Get(':slug_match')
+  findBySlug(@Param('slug_match') slug_match: string) {
+    console.log('Param nhận được:', slug_match);
+    return this.matchService.findBySlug(slug_match);
   }
 
+  @Post()
+  create(@Body() createMatch: CreateMatchDto) {
+    return this.matchService.create(createMatch);
+  }
+
+  //@UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
     return this.matchService.findAll();

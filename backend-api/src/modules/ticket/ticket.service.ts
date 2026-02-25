@@ -4,18 +4,47 @@ import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { Cart } from '../cart/entities/cart.entity';
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepo: Repository<Ticket>,
+
+    @InjectRepository(Cart)
+    private readonly cartRepo: Repository<Cart>,
   ) {}
 
   // CREATE
-  create(createTicketDto: CreateTicketDto) {
-    const newTicket = this.ticketRepo.create(createTicketDto);
-    return this.ticketRepo.save(newTicket);
+  async create(dto: CreateTicketDto, userId: number) {
+    const cartItem = await this.cartRepo.findOne({
+      where: {
+        id: dto.cartId,
+        user: { id: userId }, // đảm bảo cart thuộc user này
+      },
+      relations: ['match', 'user'],
+    });
+
+    if (!cartItem) {
+      throw new NotFoundException('Cart item not found');
+    }
+
+    const ticket = this.ticketRepo.create({
+      match: cartItem.match,
+      user: cartItem.user,
+      area: cartItem.area,
+      price: cartItem.price, // lấy từ DB
+      quantity: cartItem.quantity, // lấy từ DB
+      paymentMethod: dto.paymentMethod,
+    });
+
+    await this.ticketRepo.save(ticket);
+
+    // Sau khi tạo ticket thì xóa cart item đó
+    await this.cartRepo.delete(cartItem.id);
+
+    return ticket;
   }
 
   // READ ALL

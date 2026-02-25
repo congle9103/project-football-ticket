@@ -17,21 +17,6 @@ class UserIdDto {
 }
 
 export class CreateTicketDto {
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => MatchIdDto)
-  match: MatchIdDto;
-
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => UserIdDto)
-  user: UserIdDto;
-
-  @IsNotEmpty()
-  @IsString()
-  area: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  price: number;
+  cartId: number;
+  paymentMethod: string;
 }

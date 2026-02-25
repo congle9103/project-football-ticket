@@ -29,6 +29,12 @@ export class Ticket {
   @Column()
   price: number;
 
+  @Column()
+  quantity: number;
+
+  @Column()
+  paymentMethod: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

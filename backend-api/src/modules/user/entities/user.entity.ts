@@ -1,3 +1,4 @@
+import { Cart } from 'src/modules/cart/entities/cart.entity';
 import { Ticket } from 'src/modules/ticket/entities/ticket.entity';
 import {
   Entity,
@@ -16,6 +17,9 @@ export class User {
 
   @OneToMany(() => Ticket, (ticket) => ticket.user)
   tickets: Ticket[];
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts: Cart[];
 
   @Column({ length: 100 })
   username: string;
