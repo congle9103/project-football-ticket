@@ -51,7 +51,7 @@ export class User {
   })
   @Column({ nullable: true })
   //   → NULL được phép nhiều
-  // → Nhưng nếu có phone → phải unique
+  // → Nhưng nếu có hashedRefreshToken → phải unique
   hashedRefreshToken?: string;
 
   @CreateDateColumn({ name: 'created_at' })

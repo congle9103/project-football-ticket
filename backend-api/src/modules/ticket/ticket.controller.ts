@@ -45,4 +45,11 @@ export class TicketController {
   remove(@Param('id') id: string) {
     return this.ticketService.remove(+id);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('checkout')
+  checkout(@Body() body: { paymentMethod: string }, @Req() req: Request) {
+    const user = req.user as any;
+    return this.ticketService.checkoutAll(user.userId, body.paymentMethod);
+  }
 }

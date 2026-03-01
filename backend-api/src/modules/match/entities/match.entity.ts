@@ -14,6 +14,9 @@ export class Match {
   @PrimaryGeneratedColumn() // tự động tăng
   id: number;
 
+  @Column()
+  name: string;
+
   @Column({ length: 100 })
   slug_match: string;
 

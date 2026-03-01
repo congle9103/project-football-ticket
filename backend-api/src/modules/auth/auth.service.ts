@@ -4,6 +4,9 @@ import { LoginDto } from './login.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Staff } from '../staff/entities/staff.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +14,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    @InjectRepository(Staff)
+    private readonly staffRepo: Repository<Staff>,
   ) {}
 
   async login(dto: LoginDto) {
@@ -105,5 +110,38 @@ export class AuthService {
     await this.userService.updateRefreshToken(userId, '');
 
     return { message: 'Logged out successfully' };
+  }
+
+  async staffLogin(dto: LoginDto) {
+    const { username, password } = dto;
+
+    const staff = await this.staffRepo.findOne({
+      where: { username },
+    });
+
+    if (!staff) {
+      return {
+        success: false,
+        message: 'Invalid username or password',
+      };
+    }
+
+    const isMatch = await bcrypt.compare(password, staff.password);
+
+    if (!isMatch) {
+      return {
+        success: false,
+        message: 'Invalid username or password',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Staff login successful',
+      data: {
+        id: staff.id,
+        username: staff.username,
+      },
+    };
   }
 }

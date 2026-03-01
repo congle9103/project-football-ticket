@@ -9,6 +9,7 @@ POST http://localhost:3000/matches
 Content-Type: application/json
 
 {
+  "name": "SHB Đà Nẵng-Công An Hà Nội",
   "slug_match": "sbh-da-nang-vs-cong-an-ha-noi-2026-02-10--18:30",
   "away_team": "Công An Hà Nội",
   "image_away_team": "a-little-history-of-the-world-2ic8qqdr-qjkhxpad.webp",

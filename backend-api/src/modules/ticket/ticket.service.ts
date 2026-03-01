@@ -5,6 +5,7 @@ import { Ticket } from './entities/ticket.entity';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Cart } from '../cart/entities/cart.entity';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class TicketService {
@@ -14,6 +15,8 @@ export class TicketService {
 
     @InjectRepository(Cart)
     private readonly cartRepo: Repository<Cart>,
+
+    private readonly emailService: EmailService,
   ) {}
 
   // CREATE
@@ -34,8 +37,8 @@ export class TicketService {
       match: cartItem.match,
       user: cartItem.user,
       area: cartItem.area,
-      price: cartItem.price, // lấy từ DB
-      quantity: cartItem.quantity, // lấy từ DB
+      price: cartItem.price,
+      quantity: cartItem.quantity,
       paymentMethod: dto.paymentMethod,
     });
 
@@ -93,5 +96,65 @@ export class TicketService {
 
     await this.ticketRepo.delete(id);
     return ticket;
+  }
+
+  async checkoutAll(userId: number, paymentMethod: string) {
+    const cartItems = await this.cartRepo.find({
+      where: { user: { id: userId } },
+      relations: ['match', 'user'],
+    });
+
+    if (!cartItems.length) {
+      throw new NotFoundException('Cart empty');
+    }
+
+    const tickets: Ticket[] = [];
+
+    for (const item of cartItems) {
+      const ticket = this.ticketRepo.create({
+        match: item.match,
+        user: item.user,
+        area: item.area,
+        price: item.price,
+        quantity: item.quantity,
+        paymentMethod,
+      });
+
+      await this.ticketRepo.save(ticket);
+      tickets.push(ticket);
+    }
+
+    // Format thời gian (lấy match đầu tiên)
+    const rawTime = cartItems[0].match.time;
+    const formattedTime = new Date(rawTime.replace('--', 'T')).toLocaleString(
+      'vi-VN',
+      {
+        dateStyle: 'full',
+        timeStyle: 'short',
+      },
+    );
+
+    const email = cartItems[0].user.email;
+
+    if (!email) {
+      throw new NotFoundException('User email not found');
+    }
+
+    // GỬI 1 EMAIL DUY NHẤT (lặp theo area)
+    try {
+      await this.emailService.sendCheckoutEmail(
+        email,
+        cartItems[0].match.name,
+        formattedTime,
+        cartItems,
+      );
+    } catch (err) {
+      console.error('Send mail failed:', err);
+    }
+
+    // Xóa toàn bộ cart sau khi xử lý
+    await this.cartRepo.delete({ user: { id: userId } });
+
+    return tickets;
   }
 }

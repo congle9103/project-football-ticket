@@ -29,7 +29,7 @@ const Checkout = () => {
       return res.data;
     },
   });
- 
+
   // Lấy email, phone từ user nếu có
   useEffect(() => {
     if (user) {
@@ -50,14 +50,9 @@ const Checkout = () => {
   // Mutation thanh toán
   const checkoutMutation = useMutation({
     mutationFn: async () => {
-      await Promise.all(
-        cart.map((item: any) =>
-          api.post("/tickets", {
-            cartId: item.id,
-            paymentMethod: selected,
-          }),
-        ),
-      );
+      await api.post("/tickets/checkout", {
+        paymentMethod: selected,
+      });
     },
     onSuccess: () => {
       stopCountdown();
@@ -67,6 +62,9 @@ const Checkout = () => {
         setShowPopup(false);
         router.push("/");
       }, 2000);
+    },
+    onError: (err) => {
+      console.log("Checkout error:", err);
     },
   });
 

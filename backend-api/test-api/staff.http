@@ -1,0 +1,47 @@
+###
+GET http://localhost:3000/staff
+Content-Type: application/json
+//Authorization: Bearer your_access_token_here
+
+### 
+POST http://localhost:3000/auth/staff-login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123456"
+}
+
+###
+GET http://localhost:3000/staff/1
+
+###
+POST http://localhost:3000/staff
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123456",
+  "role": "admin"
+}
+
+###
+POST http://localhost:3000/staff
+Content-Type: application/json
+
+{
+  "username": "staff1",
+  "password": "123456"
+}
+
+###
+PATCH http://localhost:3000/staff/1
+Content-Type: application/json
+
+{
+  "username": "staff_updated",
+  "password": "newsecurepassword"
+}
+
+###
+DELETE http://localhost:3000/staff/2

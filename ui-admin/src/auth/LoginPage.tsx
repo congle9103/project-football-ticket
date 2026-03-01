@@ -1,116 +1,87 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../stores/useAuthStore"; 
+import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-
-// ✅ Schema xác thực
-const schema = yup.object().shape({
-  username: yup.string().required("Vui lòng nhập tên đăng nhập"),
-  password: yup.string().required("Vui lòng nhập mật khẩu"),
-});
-
-type LoginFormInputs = {
-  username: string;
-  password: string;
-};
+import Popup from "../components/Popup";
 
 const LoginPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({ resolver: yupResolver(schema) });
-
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
-  // ✅ Lấy hàm setUser từ Zustand store
-  const setUser = useAuthStore((state) => state.setUser);
-
-  const onSubmit = async (data: LoginFormInputs) => {
+  const handleLogin = async () => {
     try {
-      setLoginError(null);
       setLoading(true);
 
-      // ✅ Gọi đúng API login
       const res = await axios.post(
-        "http://localhost:8080/api/v1/auth/staff/login",
-        data
+        `http://localhost:3000/auth/staff-login`,
+        { username, password },
       );
 
-      const { token, user } = res.data.data;
+      console.log("Login successful:", res.data);
 
-      localStorage.setItem("token", token)
-      // ✅ Lưu user vào Zustand và localStorage
-      setUser({ ...user, token });
+      setShowPopup(true);
 
-      // ✅ Điều hướng về dashboard
-      window.location.href = "/dashboardPage";
-    } catch (err: any) {
-      console.error("❌ Lỗi khi đăng nhập:", err);
-      setLoginError(
-        err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu"
-      );
+      setTimeout(() => {
+        window.location.href = "/dashboardPage";
+        setShowPopup(false);
+      }, 1500);
+    } catch (error: any) {
+      console.log(error);
+      alert("Sai tên đăng nhập hoặc mật khẩu");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
-          Đăng nhập hệ thống
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 px-4">
+      <div className="w-full max-w-md backdrop-blur-xl bg-white/20 border border-white/30 shadow-2xl rounded-3xl p-8 text-white">
+        {/* Logo / Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold tracking-wide">Hệ thống quản lý</h1>
+          <p className="text-sm text-white/80 mt-2">
+            Đăng nhập để tiếp tục vào hệ thống
+          </p>
+        </div>
 
-        {loginError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
-            {loginError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Form */}
+        <form className="space-y-6">
+          {/* Username */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm mb-2 text-white/90">
               Tên đăng nhập
             </label>
             <input
+              onChange={(e) => setUsername(e.target.value)}
               type="text"
-              {...register("username")}
               placeholder="Nhập tên đăng nhập..."
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 
+              placeholder-white/60 text-white focus:outline-none 
+              focus:ring-2 focus:ring-white focus:bg-white/30 transition-all"
             />
-            {errors.username && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.username.message}
-              </p>
-            )}
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mật khẩu
-            </label>
+            <label className="block text-sm mb-2 text-white/90">Mật khẩu</label>
 
             <div className="relative">
               <input
+                onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
-                {...register("password")}
                 placeholder="Nhập mật khẩu..."
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10"
+                className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 
+                placeholder-white/60 text-white focus:outline-none 
+                focus:ring-2 focus:ring-white focus:bg-white/30 transition-all pr-12"
               />
 
-              {/* 👁 Nút hiện/ẩn mật khẩu */}
+              {/* Eye Icon */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                className="absolute inset-y-0 right-4 flex items-center text-white/70 hover:text-white transition"
               >
                 {showPassword ? (
                   <FaEye className="w-5 h-5" />
@@ -119,27 +90,42 @@ const LoginPage = () => {
                 )}
               </button>
             </div>
-
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
+          {/* Remember + Forgot */}
+          <div className="flex justify-between items-center text-sm text-white/80">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="accent-white" />
+              Ghi nhớ đăng nhập
+            </label>
+            <button type="button" className="hover:underline">
+              Quên mật khẩu?
+            </button>
+          </div>
+
+          {/* Button */}
           <button
-            type="submit"
+            onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition duration-150 disabled:opacity-70 disabled:cursor-not-allowed"
+            type="button"
+            className="w-full py-3 rounded-xl bg-white text-indigo-600 font-semibold cursor-pointer
+            hover:bg-indigo-100 active:scale-[0.98] transition-all shadow-lg"
           >
-            {loading ? "Đang kiểm tra..." : "Đăng nhập"}
+            Đăng nhập
           </button>
         </form>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
-          © {new Date().getFullYear()} BookStore Admin
+        {/* Footer */}
+        <p className="text-center text-xs text-white/70 mt-8">
+          © {new Date().getFullYear()} Football Ticket Admin
         </p>
       </div>
+      <Popup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        title="Đăng nhập thành công 🎉"
+        message="Bạn đã đăng nhập thành công"
+      />
     </div>
   );
 };

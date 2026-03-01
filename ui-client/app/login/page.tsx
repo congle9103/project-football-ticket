@@ -18,7 +18,7 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationFn: async () => {
       const res = await axios.post(
-        "http://localhost:3000/auth/login", // port backend
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`, // port backend
         { username, password },
         {
           withCredentials: true, // QUAN TRỌNG để nhận cookie

@@ -9,6 +9,8 @@ import { TicketModule } from './modules/ticket/ticket.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClubModule } from './modules/club/club.module';
 import { CartModule } from './modules/cart/cart.module';
+import { StaffModule } from './modules/staff/staff.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { CartModule } from './modules/cart/cart.module';
       entities: ['dist/**/*.entity{.ts,.js}'], // Dẫn đến các entity nhưng các enity phải có đuôi .entity
       synchronize: true, // tự động tạo bảng từ entity, chỉ bật khi development
       options: {
-        encrypt: true, // Dữ liệu đi từ NestJS → SQL Server được mã hoá
+        encrypt: true, // bắt buộc phải có nếu SQL Server bật tính năng bảo mật (thường là mặc định)
         trustServerCertificate: true, // Tin cậy chứng chỉ SSL của SQL Server, nếu không bật cái này → kết nối bị lỗi
       },
     }),
@@ -36,6 +38,8 @@ import { CartModule } from './modules/cart/cart.module';
     AuthModule,
     ClubModule,
     CartModule,
+    StaffModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -113,4 +113,9 @@ export class AuthController {
 
     return { message: 'Logout success' };
   }
+
+  @Post('staff-login')
+  async staffLogin(@Body() dto: LoginDto) {
+    return this.authService.staffLogin(dto);
+  }
 }
